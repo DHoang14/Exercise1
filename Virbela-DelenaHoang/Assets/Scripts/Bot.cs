@@ -6,22 +6,21 @@ public class Bot : MonoBehaviour
 {
     public List<Distance> distances = new List<Distance>();
     public Position[] neighbors;
-    
-
     public List<Position> unseenNeighbors = new List<Position>();
     public bool checkingDistance = false;
+    
     private Material ogMat;
     // Start is called before the first frame update
     void Start()
     {
+        //remembers original material it needs to change back to if unhighlighted
         ogMat = GetComponent<Renderer>().material;
 
+        //records bot's position for registration with player
         Position newBot = new Position(gameObject.transform.position.x, gameObject.transform.position.y, gameObject.transform.position.z, gameObject);
-
-
         distances = Player.instance.RegisterBot(newBot);
 
-        //closest two neighbors
+        //finds closest k neighbors where k is determined by the number of neighbors specified in the player's inspector
         neighbors = new Position[Player.instance.neighborsCount];
         for (int k = 0; k < distances.Count; k++)
         {
@@ -29,7 +28,12 @@ public class Bot : MonoBehaviour
             {
                 neighbors[k] = new Position(distances[k].calculatedObj.transform.position.x, distances[k].calculatedObj.transform.position.y, distances[k].calculatedObj.transform.position.z, distances[k].calculatedObj);
 
-
+                //Informs neighbor that they have been registered as a neighbor.
+                //This is important in making sure that the neighbor is aware 
+                //they need to keep track of this bot as well in the case that 
+                //this bot is not registered as a neighbor by any other bots.
+                //In the case it is not registered as a neighbor by anyone, it is 
+                //possible that it will be completely overlooked when the player approaches it.
                 neighbors[k].referencedObj.GetComponent<Bot>().UpdateUnseen(newBot);
 
 
@@ -45,26 +49,41 @@ public class Bot : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //O(1) but more specifically O(k) where k is represented as the specified constant number of neighbors in the
+        //player's inspector. k should be less than the number of bots.
+        //Only performs current distance calculations between the player, itself and its k neighbors at every update.
+        //This is more efficient than constantly calculating what bot out of all bots is closest one by one as the
+        //the number of calculations is signficantly reduced down to k + 2 where k < n.
+        //Additionally, the calculations are only performed by one bot at a time (closest bot), so bots that are farther than the
+        //the scope of this bot and its neighbors do not perform any unnecessary calculations. After all, if the player is 
+        //closest to this bot and its neighbors, there shouldn't be any need to keep trying to calculate the distance between the
+        //the player and an bot even farther than this bot and its neighbors as it would obviously not be the closest one.
         if (checkingDistance)
         {
+            //puts player's position x, y, z into variables to make rest of the code more readable
             float playerX = Player.instance.transform.position.x;
             float playerY = Player.instance.transform.position.y;
             float playerZ = Player.instance.transform.position.z;
 
+            //calculates distance between player and this bot
             float distanceBtwnThis = Mathf.Sqrt(Mathf.Pow((playerX - gameObject.transform.position.x), 2.0f) +
                 Mathf.Pow((playerY - gameObject.transform.position.y), 2.0f) +
                 Mathf.Pow((playerZ - gameObject.transform.position.z), 2.0f));
 
+            //initialize minimum to this bot
             GameObject minObj = gameObject;
             float min = distanceBtwnThis;
+
             for (int i = 0; i < neighbors.Length; i++)
             {
-                if (neighbors != null)
+                if (neighbors != null) //if there is a neighbor in array of neighbors
                 {
+                    //calculates minimum between neighbor and the player
                     float distanceBtwnNeighbor = Mathf.Sqrt(Mathf.Pow((playerX - neighbors[i].x), 2.0f) +
                         Mathf.Pow((playerY - neighbors[i].y), 2.0f) +
                         Mathf.Pow((playerZ - neighbors[i].z), 2.0f));
 
+                    //if distance between neighbor and player is closer than the minimum, overwrite the minimum and set the closest bot to that neighbor
                     if (distanceBtwnNeighbor < min)
                     {
                         minObj = neighbors[i].referencedObj;
@@ -73,12 +92,16 @@ public class Bot : MonoBehaviour
                 }
             }
 
+
+            //iterates through unseen neighbors (bots that registered this bot as a neighbor but might not be registered as being a neighbor with others itself)
             for (int j = 0; j < unseenNeighbors.Count; j++)
             {
+                //calculates minimum between unseen neighbor and the player
                 float distanceBtwnNeighbor = Mathf.Sqrt(Mathf.Pow((playerX - unseenNeighbors[j].x), 2.0f) +
                     Mathf.Pow((playerY - unseenNeighbors[j].y), 2.0f) +
                     Mathf.Pow((playerZ - unseenNeighbors[j].z), 2.0f));
 
+                //if distance between unseen neighbor and player is closer than the minimum, overwrite the minimum and set the closest bot to that unseen neighbor
                 if (distanceBtwnNeighbor < min)
                 {
                     minObj = unseenNeighbors[j].referencedObj;
@@ -86,6 +109,7 @@ public class Bot : MonoBehaviour
                 }
             }
 
+            //if this bot is no longer the closest to the player, ask the player to switch the closest to the new closest
             if (minObj != gameObject)
             {
                 ColorChange switchColors = new ColorChange(minObj, gameObject, ogMat);
@@ -95,13 +119,15 @@ public class Bot : MonoBehaviour
         }
     }
 
+    //Updates minimum distance ranking. This is important in being able to check who the closest neighbors are for closest calculations.
+    //Updated everytime there is a new bot in case it is spawned even closer to the player than this bot.
     public void UpdateRankings(float newDistance, GameObject newGameObject)
     {
 
         Distance toAdd = new Distance(newDistance, newGameObject);
         bool inserted = false;
 
-        //sorts rankings list by min
+        //insertion sort works best when list is already sorted (O(n)). This method only adds one more bot to already sorted minimum distance list
         for (int j = 0; j < distances.Count; j++)
         {
             if (newDistance <= distances[j].distance)
@@ -116,19 +142,20 @@ public class Bot : MonoBehaviour
             distances.Add(toAdd);
         }
 
-        //updates closest two neighbors
-        Position newBot = new Position(gameObject.transform.position.x, gameObject.transform.position.y, gameObject.transform.position.z, gameObject);
+        //records own position in order to inform old neighbors to remove it from the list of unseen neighbors if it's there
+        Position self = new Position(gameObject.transform.position.x, gameObject.transform.position.y, gameObject.transform.position.z, gameObject);
 
         //before changing neighbors inform old ones to remove from unseen
         for (int l = 0; l < neighbors.Length; l++)
         {
+            //if neighbor exists in array, notify it to remove this bot from its list of unseen neighbors
             if (neighbors[l].referencedObj != null)
             {
-                neighbors[l].referencedObj.GetComponent<Bot>().UpdateRemove(newBot);
+                neighbors[l].referencedObj.GetComponent<Bot>().UpdateRemove(self);
             }
         }
 
-        //changed neighbors
+        //change neighbors to new k closest neighbors according to new rankings
         for (int k = 0; k < distances.Count; k++)
         {
             if (k < Player.instance.neighborsCount)
@@ -136,7 +163,8 @@ public class Bot : MonoBehaviour
 
                 neighbors[k] = new Position(distances[k].calculatedObj.transform.position.x, distances[k].calculatedObj.transform.position.y, distances[k].calculatedObj.transform.position.z, distances[k].calculatedObj);
 
-                neighbors[k].referencedObj.GetComponent<Bot>().UpdateUnseen(newBot);
+                //inform new neighbors that they might need to add this bot as an unseen neighbor if they are not already neighbors
+                neighbors[k].referencedObj.GetComponent<Bot>().UpdateUnseen(self);
 
 
             }
@@ -148,7 +176,7 @@ public class Bot : MonoBehaviour
     }
 
 
-
+    //if two bots are not already neighbors, register the new bot as its unseen neighbor
     public void UpdateUnseen(Position newBot)
     {
         bool unique = true;
@@ -160,21 +188,21 @@ public class Bot : MonoBehaviour
             {
 
 
-                if (neighbors[i].referencedObj == newBot.referencedObj)
+                if (neighbors[i].referencedObj == newBot.referencedObj) //already neighbors
                 {
                     unique = false;
                 }
 
             }
         }
-        if (unique)
+        if (unique) //if not already neighbors add to list of unseen neighbors
         {
             unseenNeighbors.Add(newBot);
         }
 
     }
 
-
+    //remove from unseen neighbors if new bot is already in the list
     public void UpdateRemove(Position newBot)
     {
         if (unseenNeighbors.Contains(newBot))
