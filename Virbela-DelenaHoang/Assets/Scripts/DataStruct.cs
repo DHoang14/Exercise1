@@ -39,13 +39,13 @@ public struct ColorChange
 
     public GameObject changeColor;
     public GameObject undoColor;
-    public Material originalMat;
 
-    public ColorChange(GameObject change, GameObject previous, Material ogMat)
+
+    public ColorChange(GameObject change, GameObject previous)
     {
         changeColor = change;
         undoColor = previous;
-        originalMat = ogMat;
+
     }
 
 };

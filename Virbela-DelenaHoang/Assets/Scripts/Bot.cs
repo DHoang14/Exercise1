@@ -9,12 +9,10 @@ public class Bot : MonoBehaviour
     public List<Position> unseenNeighbors = new List<Position>();
     public bool checkingDistance = false;
     
-    private Material ogMat;
     // Start is called before the first frame update
     void Start()
     {
-        //remembers original material it needs to change back to if unhighlighted
-        ogMat = GetComponent<Renderer>().material;
+
 
         //records bot's position for registration with player
         Position newBot = new Position(gameObject.transform.position, gameObject);
@@ -110,7 +108,7 @@ public class Bot : MonoBehaviour
             //if this bot is no longer the closest to the player, ask the player to switch the closest to the new closest
             if (minObj != gameObject)
             {
-                ColorChange switchColors = new ColorChange(minObj, gameObject, ogMat);
+                ColorChange switchColors = new ColorChange(minObj, gameObject);
                 Player.instance.colorQueue.Enqueue(switchColors);
             }
 

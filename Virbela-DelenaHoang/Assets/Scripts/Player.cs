@@ -19,11 +19,14 @@ public class Player : MonoBehaviour
     public List<Position> itemPositions;
     public List<Position> botPositions;
     public int neighborsCount;
-    
-    
+
+    public Color itemBase;
+    private Material itemBaseColor;
     public Color itemHighlight;
     private Material itemColor;
 
+    public Color botBase;
+    private Material botBaseColor;
     public Color botHighlight;
     private Material botColor;
 
@@ -49,6 +52,14 @@ public class Player : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        //changes item base color to specified color
+        itemBaseColor = Resources.Load("Materials/ItemBase", typeof(Material)) as Material;
+        itemBaseColor.color = itemBase;
+
+        //changes bot base color to specified color
+        botBaseColor = Resources.Load("Materials/BotBase", typeof(Material)) as Material;
+        botBaseColor.color = botBase;
 
         //changes item highlight color to specified color
         itemColor = Resources.Load("Materials/ItemColor", typeof(Material)) as Material;
@@ -76,22 +87,10 @@ public class Player : MonoBehaviour
                     //tells the previous closest item to stop keeping track of who out of its neighbors and itself
                     //is closet to the player
                     head.undoColor.GetComponent<Item>().checkingDistance = false;
-                    
-                }
-                else
-                {
-                    //tells the previous closest bot to stop keeping track of who out of its neighbors and itself
-                    //is closet to the player
-                    head.undoColor.GetComponent<Bot>().checkingDistance = false;
 
-                }
+                    //returns previous closest item to its original material aka unhighlights it
+                    head.undoColor.GetComponent<Renderer>().material = itemBaseColor;
 
-                //returns previous closest item/bot to its original material aka unhighlights it
-                head.undoColor.GetComponent<Renderer>().material = head.originalMat;
-
-                //checks if request is item or bot
-                if (head.changeColor.GetComponent<Item>() != null)
-                {
                     //Tells new closest item to start keeping track of who is closer to the player between it 
                     //and its neighbors. Also highlights it with the item highlight color.
                     head.changeColor.GetComponent<Item>().checkingDistance = true;
@@ -99,11 +98,20 @@ public class Player : MonoBehaviour
                 }
                 else
                 {
+                    //tells the previous closest bot to stop keeping track of who out of its neighbors and itself
+                    //is closet to the player
+                    head.undoColor.GetComponent<Bot>().checkingDistance = false;
+
+                    //returns previous closest bot to its original material aka unhighlights it
+                    head.undoColor.GetComponent<Renderer>().material = botBaseColor;
+
                     //Tells new closest bot to start keeping track of who is closer to the player between it 
                     //and its neighbors. Also highlights it with the item highlight color.
                     head.changeColor.GetComponent<Bot>().checkingDistance = true;
                     head.changeColor.GetComponent<Renderer>().material = botColor;
                 }
+
+
                 
             }
 
