@@ -148,7 +148,7 @@ public class Player : MonoBehaviour
             for(int i = 0; i < itemPositions.Count; i++)
             {
                 //calculates distance between new item and item in player's list of items
-                float distanceBtwn = Mathf.Sqrt(Mathf.Pow((itemPositions[i].x - item.x), 2.0f) + Mathf.Pow((itemPositions[i].y - item.y), 2.0f) + Mathf.Pow((itemPositions[i].z - item.z), 2.0f));
+                float distanceBtwn = (itemPositions[i].pos - item.pos).sqrMagnitude;
                 Distance newDistance = new Distance(distanceBtwn, itemPositions[i].referencedObj);
 
                 //insertion sort works best when list is already sorted (O(n)). It seemed more efficient to sort the minimum
@@ -197,7 +197,7 @@ public class Player : MonoBehaviour
             for (int i = 0; i < botPositions.Count; i++)
             {
                 //calculates distance between new bot and bot in player's list of bot
-                float distanceBtwn = Mathf.Sqrt(Mathf.Pow((botPositions[i].x - bot.x), 2.0f) + Mathf.Pow((botPositions[i].y - bot.y), 2.0f) + Mathf.Pow((botPositions[i].z - bot.z), 2.0f));
+                float distanceBtwn = (botPositions[i].pos - bot.pos).sqrMagnitude;
                 Distance newDistance = new Distance(distanceBtwn, botPositions[i].referencedObj);
 
                 //insertion sort works best when list is already sorted (O(n)). It seemed more efficient to sort the minimum

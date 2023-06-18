@@ -7,16 +7,12 @@ using UnityEngine;
 public struct Position
 {
 
-    public float x;
-    public float y;
-    public float z;
+    public Vector3 pos;
     public GameObject referencedObj;
 
-    public Position(float xTransform, float yTransform, float zTransform, GameObject obj)
+    public Position(Vector3 position, GameObject obj)
     {
-        x = xTransform;
-        y = yTransform;
-        z = zTransform;
+        pos = position;
         referencedObj = obj;
     }
 

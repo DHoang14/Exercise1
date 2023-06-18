@@ -20,7 +20,7 @@ public class Item : MonoBehaviour
         ogMat = GetComponent<Renderer>().material;
 
         //records position of the item for registration with player
-        Position newItem = new Position(gameObject.transform.position.x, gameObject.transform.position.y, gameObject.transform.position.z, gameObject);
+        Position newItem = new Position(gameObject.transform.position, gameObject);
         distances = Player.instance.RegisterItem(newItem);
 
         //finds closest k neighbors where k is determined by the number of neighbors specified in the player's inspector
@@ -29,7 +29,7 @@ public class Item : MonoBehaviour
         {
             if (k < Player.instance.neighborsCount)
             {
-                neighbors[k] = new Position(distances[k].calculatedObj.transform.position.x, distances[k].calculatedObj.transform.position.y, distances[k].calculatedObj.transform.position.z, distances[k].calculatedObj);
+                neighbors[k] = new Position(distances[k].calculatedObj.transform.position, distances[k].calculatedObj);
 
                 //Informs neighbor that they have been registered as a neighbor.
                 //This is important in making sure that the neighbor is aware 
@@ -63,15 +63,10 @@ public class Item : MonoBehaviour
         //the player and an item even farther than this item and its neighbors as it would obviously not be the closest one.
         if (checkingDistance)
         {
-            //puts player's position x, y, z into variables to make rest of the code more readable
-            float playerX = Player.instance.transform.position.x;
-            float playerY = Player.instance.transform.position.y;
-            float playerZ = Player.instance.transform.position.z;
+           
 
             //calculates distance between player and this item
-            float distanceBtwnThis = Mathf.Sqrt(Mathf.Pow((playerX - gameObject.transform.position.x), 2.0f) + 
-                Mathf.Pow((playerY - gameObject.transform.position.y), 2.0f) + 
-                Mathf.Pow((playerZ - gameObject.transform.position.z), 2.0f));
+            float distanceBtwnThis = (Player.instance.transform.position - gameObject.transform.position).sqrMagnitude;
 
             //initialize minimum to this item
             GameObject minObj = gameObject;
@@ -82,9 +77,8 @@ public class Item : MonoBehaviour
                 if (neighbors != null) //if there is a neighbor in array of neighbors
                 {
                     //calculates minimum between neighbor and the player
-                    float distanceBtwnNeighbor = Mathf.Sqrt(Mathf.Pow((playerX - neighbors[i].x), 2.0f) +
-                        Mathf.Pow((playerY - neighbors[i].y), 2.0f) +
-                        Mathf.Pow((playerZ - neighbors[i].z), 2.0f));
+                    float distanceBtwnNeighbor = (Player.instance.transform.position - neighbors[i].pos).sqrMagnitude;
+
 
                     //if distance between neighbor and player is closer than the minimum, overwrite the minimum and set the closest item to that neighbor
                     if (distanceBtwnNeighbor < min)
@@ -99,9 +93,7 @@ public class Item : MonoBehaviour
             for (int j = 0; j < unseenNeighbors.Count; j++)
             {
                 //calculates minimum between unseen neighbor and the player
-                float distanceBtwnNeighbor = Mathf.Sqrt(Mathf.Pow((playerX - unseenNeighbors[j].x), 2.0f) +
-                    Mathf.Pow((playerY - unseenNeighbors[j].y), 2.0f) +
-                    Mathf.Pow((playerZ - unseenNeighbors[j].z), 2.0f));
+                float distanceBtwnNeighbor = (Player.instance.transform.position - unseenNeighbors[j].pos).sqrMagnitude;
 
                 //if distance between unseen neighbor and player is closer than the minimum, overwrite the minimum and set the closest item to that unseen neighbor
                 if (distanceBtwnNeighbor < min)
@@ -146,7 +138,7 @@ public class Item : MonoBehaviour
         }
 
         //records own position in order to inform old neighbors to remove it from the list of unseen neighbors if it's there
-        Position self = new Position(gameObject.transform.position.x, gameObject.transform.position.y, gameObject.transform.position.z, gameObject);
+        Position self = new Position(gameObject.transform.position, gameObject);
 
         //before changing neighbors inform old ones to remove from unseen
         for (int l = 0; l < neighbors.Length; l++)
@@ -164,7 +156,7 @@ public class Item : MonoBehaviour
             if (k < Player.instance.neighborsCount)
             {    
 
-                neighbors[k] = new Position(distances[k].calculatedObj.transform.position.x, distances[k].calculatedObj.transform.position.y, distances[k].calculatedObj.transform.position.z, distances[k].calculatedObj);
+                neighbors[k] = new Position(distances[k].calculatedObj.transform.position, distances[k].calculatedObj);
 
                 //inform new neighbors that they might need to add this item as an unseen neighbor if they are not already neighbors
                 neighbors[k].referencedObj.GetComponent<Item>().UpdateUnseen(self);
