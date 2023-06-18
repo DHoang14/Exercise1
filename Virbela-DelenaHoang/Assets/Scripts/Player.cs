@@ -39,6 +39,9 @@ public class Player : MonoBehaviour
     public Vector3 minPos;
     public Vector3 maxPos;
 
+    /// <summary>
+    /// intitializes variables
+    /// </summary>
     void Awake()
     {
         //Ensures there is only one player instance and it is available to all items and bots for quick reference.
@@ -71,6 +74,9 @@ public class Player : MonoBehaviour
     }
 
     // Update is called once per frame
+    /// <summary>
+    /// Changes color of gameObjects as requested by items and bots. Also spawns new items and bots when the player presses "z" and "x" respectively.
+    /// </summary>
     void Update()
     {
         //if a color change request has been queued, change colors FIFO
@@ -145,7 +151,11 @@ public class Player : MonoBehaviour
         }
     }
 
-    //registers item to player's list of items
+    /// <summary>
+    /// registers item to player's list of items
+    /// </summary>
+    /// <param name="item">Item that will be registered with player.</param>
+    /// <returns>Sorted list of distances in ascending order for the item that was newly registerd.</returns>
     public List<Distance> RegisterItem(Position item)
     {
         List<Distance> returnList = new List<Distance>();
@@ -195,7 +205,11 @@ public class Player : MonoBehaviour
         return returnList;
     }
 
-    //registers new bot to player's bot list
+    /// <summary>
+    /// registers bot to player's list of bots
+    /// </summary>
+    /// <param name="bot">Bot that will be registered with player.</param>
+    /// <returns>Sorted list of distances in ascending order for the bot that was newly registerd.</returns>
     public List<Distance> RegisterBot(Position bot)
     {
         List<Distance> returnList = new List<Distance>();

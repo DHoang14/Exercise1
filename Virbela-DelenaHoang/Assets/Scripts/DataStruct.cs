@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
+/// <summary>
+/// data structure to record position information of a gameObject
+/// </summary>
 [System.Serializable]
 public struct Position
 {
@@ -18,6 +20,9 @@ public struct Position
 
 };
 
+/// <summary>
+/// data structure to record distance from gameObject
+/// </summary>
 [System.Serializable]
 public struct Distance
 {
@@ -33,6 +38,9 @@ public struct Distance
 
 };
 
+/// <summary>
+/// data structure to keep track of which gameObjects need to have their colors changed
+/// </summary>
 [System.Serializable]
 public struct ColorChange
 {

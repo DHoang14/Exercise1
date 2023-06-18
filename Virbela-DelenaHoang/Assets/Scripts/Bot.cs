@@ -8,8 +8,11 @@ public class Bot : MonoBehaviour
     public Position[] neighbors;
     public List<Position> unseenNeighbors = new List<Position>();
     public bool checkingDistance = false;
-    
+
     // Start is called before the first frame update
+    /// <summary>
+    /// Registers bot with player and finds k closest neighbors if possible. K is defined in player's inspector.
+    /// </summary>
     void Start()
     {
 
@@ -45,6 +48,10 @@ public class Bot : MonoBehaviour
     }
 
     // Update is called once per frame
+    /// <summary>
+    /// Calculates whether this bot, its neighbors, or its unseen neighbors is closest to the player. If this bot is not closest, 
+    /// it requests a color change from the player.
+    /// </summary>
     void Update()
     {
         //O(1) but more specifically O(k) where k is represented as the specified constant number of neighbors in the
@@ -115,8 +122,12 @@ public class Bot : MonoBehaviour
         }
     }
 
-    //Updates minimum distance ranking. This is important in being able to check who the closest neighbors are for closest calculations.
-    //Updated everytime there is a new bot in case it is spawned even closer to the player than this bot.
+    /// <summary>
+    /// Updates minimum distance ranking. This is important in being able to check who the closest neighbors are for closest calculations.
+    /// Updated everytime there is a new bot in case it is spawned even closer to the player than this bot.
+    /// </summary>
+    /// <param name="newDistance">The distance from this bot that the player calculated for the new bot that was newly registered.</param>
+    /// <param name="newGameObject">The new bot that was newly registered.</param>
     public void UpdateRankings(float newDistance, GameObject newGameObject)
     {
 
@@ -171,8 +182,10 @@ public class Bot : MonoBehaviour
         }
     }
 
-
-    //if two bots are not already neighbors, register the new bot as its unseen neighbor
+    /// <summary>
+    /// If two bots are not already neighbors, register the new bot as its unseen neighbor.
+    /// </summary>
+    /// <param name="newBot">The new bot that registered this bot as a neighbor.</param>
     public void UpdateUnseen(Position newBot)
     {
         bool unique = true;
@@ -198,7 +211,10 @@ public class Bot : MonoBehaviour
 
     }
 
-    //remove from unseen neighbors if new bot is already in the list
+    /// <summary>
+    /// Remove from unseen neighbors if the bot is already in the list.
+    /// </summary>
+    /// <param name="newBot">A bot that used to register this bot as a neighbor, but has updated who its neighbors are.</param>
     public void UpdateRemove(Position newBot)
     {
         if (unseenNeighbors.Contains(newBot))

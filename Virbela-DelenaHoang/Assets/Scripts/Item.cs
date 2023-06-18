@@ -14,6 +14,9 @@ public class Item : MonoBehaviour
 
 
     // Start is called before the first frame update
+    /// <summary>
+    /// Registers item with player and finds k closest neighbors if possible. K is defined in player's inspector.
+    /// </summary>
     void Start()
     {
 
@@ -49,6 +52,10 @@ public class Item : MonoBehaviour
     }
 
     // Update is called once per frame
+    /// <summary>
+    /// Calculates whether this item, its neighbors, or its unseen neighbors is closest to the player. If this item is not closest, 
+    /// it requests a color change from the player.
+    /// </summary>
     void Update()
     {
         //O(1) but more specifically O(k) where k is represented as the specified constant number of neighbors in the
@@ -119,8 +126,13 @@ public class Item : MonoBehaviour
         }
     }
 
-    //Updates minimum distance ranking. This is important in being able to check who the closest neighbors are for closest calculations.
-    //Updated everytime there is a new item in case it is spawned even closer to the player than this item.
+    /// <summary>
+    /// Updates minimum distance ranking. This is important in being able to check who the closest neighbors are for closest calculations.
+    /// Updated everytime there is a new item in case it is spawned even closer to the player than this item.
+    /// </summary>
+    /// <param name="newDistance">The distance from this item that the player calculated for the new item that was newly registered.</param>
+    /// <param name="newGameObject">The new item that was newly registered.</param>
+
     public void UpdateRankings(float newDistance, GameObject newGameObject)
     {
 
@@ -175,8 +187,10 @@ public class Item : MonoBehaviour
         }
     }
 
-   
-    //if two items are not already neighbors, register the new item as its unseen neighbor
+    /// <summary>
+    /// If two items are not already neighbors, register the new item as its unseen neighbor.
+    /// </summary>
+    /// <param name="newItem">The new item that registered this item as a neighbor.</param>
     public void UpdateUnseen(Position newItem)
     {
         bool unique = true;
@@ -202,7 +216,10 @@ public class Item : MonoBehaviour
 
     }
 
-    //remove from unseen neighbors if new item is already in the list
+    /// <summary>
+    /// Remove from unseen neighbors if the item is already in the list.
+    /// </summary>
+    /// <param name="newItem">An item that used to register this item as a neighbor, but has updated who its neighbors are.</param>
     public void UpdateRemove(Position newItem)
     {
         if (unseenNeighbors.Contains(newItem))
