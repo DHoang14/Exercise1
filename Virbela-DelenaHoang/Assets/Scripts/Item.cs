@@ -63,9 +63,11 @@ public class Item : MonoBehaviour
         //the player and an item even farther than this item and its neighbors as it would obviously not be the closest one.
         if (checkingDistance)
         {
-           
+
 
             //calculates distance between player and this item
+            //technically the distance formula uses a square root after squaring the distances, but using a square root would be more computationally expensive.
+            //it also isn't necessary to use the square root for this use case as it is only important to get a relative idea how far the objects are from each other and not know the exact distance.
             float distanceBtwnThis = (Player.instance.transform.position - gameObject.transform.position).sqrMagnitude;
 
             //initialize minimum to this item
@@ -77,6 +79,8 @@ public class Item : MonoBehaviour
                 if (neighbors != null) //if there is a neighbor in array of neighbors
                 {
                     //calculates minimum between neighbor and the player
+                    //technically the distance formula uses a square root after squaring the distances, but using a square root would be more computationally expensive.
+                    //it also isn't necessary to use the square root for this use case as it is only important to get a relative idea how far the objects are from each other and not know the exact distance.
                     float distanceBtwnNeighbor = (Player.instance.transform.position - neighbors[i].pos).sqrMagnitude;
 
 
@@ -93,6 +97,8 @@ public class Item : MonoBehaviour
             for (int j = 0; j < unseenNeighbors.Count; j++)
             {
                 //calculates minimum between unseen neighbor and the player
+                //technically the distance formula uses a square root after squaring the distances, but using a square root would be more computationally expensive.
+                //it also isn't necessary to use the square root for this use case as it is only important to get a relative idea how far the objects are from each other and not know the exact distance.
                 float distanceBtwnNeighbor = (Player.instance.transform.position - unseenNeighbors[j].pos).sqrMagnitude;
 
                 //if distance between unseen neighbor and player is closer than the minimum, overwrite the minimum and set the closest item to that unseen neighbor

@@ -148,7 +148,8 @@ public class Player : MonoBehaviour
             for(int i = 0; i < itemPositions.Count; i++)
             {
                 //calculates distance between new item and item in player's list of items
-                float distanceBtwn = (itemPositions[i].pos - item.pos).sqrMagnitude;
+                float distanceBtwn = (itemPositions[i].pos - item.pos).sqrMagnitude; //technically the distance formula uses a square root after squaring the distances, but using a square root would be more computationally expensive.
+                                                                                     //it also isn't necessary to use the square root for this use case as it is only important to get a relative idea how far the objects are from each other and not know the exact distance.
                 Distance newDistance = new Distance(distanceBtwn, itemPositions[i].referencedObj);
 
                 //insertion sort works best when list is already sorted (O(n)). It seemed more efficient to sort the minimum
@@ -197,7 +198,8 @@ public class Player : MonoBehaviour
             for (int i = 0; i < botPositions.Count; i++)
             {
                 //calculates distance between new bot and bot in player's list of bot
-                float distanceBtwn = (botPositions[i].pos - bot.pos).sqrMagnitude;
+                float distanceBtwn = (botPositions[i].pos - bot.pos).sqrMagnitude; //technically the distance formula uses a square root after squaring the distances, but using a square root would be more computationally expensive.
+                                                                                  //it also isn't necessary to use the square root for this use case as it is only important to get a relative idea how far the objects are from each other and not know the exact distance.
                 Distance newDistance = new Distance(distanceBtwn, botPositions[i].referencedObj);
 
                 //insertion sort works best when list is already sorted (O(n)). It seemed more efficient to sort the minimum

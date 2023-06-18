@@ -60,8 +60,10 @@ public class Bot : MonoBehaviour
         //the player and an bot even farther than this bot and its neighbors as it would obviously not be the closest one.
         if (checkingDistance)
         {
-           
+
             //calculates distance between player and this bot
+            //technically the distance formula uses a square root after squaring the distances, but using a square root would be more computationally expensive.
+            //it also isn't necessary to use the square root for this use case as it is only important to get a relative idea how far the objects are from each other and not know the exact distance.
             float distanceBtwnThis = (Player.instance.transform.position - gameObject.transform.position).sqrMagnitude;
 
 
@@ -74,6 +76,8 @@ public class Bot : MonoBehaviour
                 if (neighbors != null) //if there is a neighbor in array of neighbors
                 {
                     //calculates minimum between neighbor and the player
+                    //technically the distance formula uses a square root after squaring the distances, but using a square root would be more computationally expensive.
+                    //it also isn't necessary to use the square root for this use case as it is only important to get a relative idea how far the objects are from each other and not know the exact distance.
                     float distanceBtwnNeighbor = (Player.instance.transform.position - neighbors[i].pos).sqrMagnitude;
 
                     //if distance between neighbor and player is closer than the minimum, overwrite the minimum and set the closest bot to that neighbor
@@ -90,6 +94,8 @@ public class Bot : MonoBehaviour
             for (int j = 0; j < unseenNeighbors.Count; j++)
             {
                 //calculates minimum between unseen neighbor and the player
+                //technically the distance formula uses a square root after squaring the distances, but using a square root would be more computationally expensive.
+                //it also isn't necessary to use the square root for this use case as it is only important to get a relative idea how far the objects are from each other and not know the exact distance.
                 float distanceBtwnNeighbor = (Player.instance.transform.position - unseenNeighbors[j].pos).sqrMagnitude;
 
 
